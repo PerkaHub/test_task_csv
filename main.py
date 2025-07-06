@@ -5,7 +5,7 @@ import sys
 from tabulate import tabulate
 
 
-OPERATORS = ["<", ">", "="]
+OPERATORS = ['<', '>', '=']
 
 
 class CSVHandler:
@@ -15,7 +15,7 @@ class CSVHandler:
         self.aggregation_result = None
 
     def read_csv(self):
-        with open(self.file_path, mode="r", encoding="utf-8") as file:
+        with open(self.file_path, mode='r', encoding='utf-8') as file:
             reader = csv.DictReader(file)
             return list(reader)
 
@@ -24,14 +24,14 @@ class CSVHandler:
             return self
 
         try:
-            column, func = aggregate_func.split("=")
+            column, func = aggregate_func.split('=')
             values = [float(row[column]) for row in self.data if row[column]]
 
-            if func == "min":
+            if func == 'min':
                 result = min(values) if values else 0
-            elif func == "max":
+            elif func == 'max':
                 result = max(values) if values else 0
-            elif func == "avg":
+            elif func == 'avg':
                 result = sum(values) / len(values) if values else 0
             else:
                 raise ValueError((f'Неизвестная агрегатная функция {func}'))
@@ -40,7 +40,7 @@ class CSVHandler:
         except ValueError:
             raise
         except Exception as e:
-            print(f"Ошибка агрегации {e}")
+            print(f'Ошибка агрегации {e}')
 
         return self
 
@@ -54,48 +54,48 @@ class CSVHandler:
                     break
             filtered = []
             for row in self.data:
-                if operator == "=" and str(row[column]) == value:
+                if operator == '=' and str(row[column]) == value:
                     filtered.append(row)
-                elif operator == "<" and float(row[column]) < float(value):
+                elif operator == '<'and float(row[column]) < float(value):
                     filtered.append(row)
-                elif operator == ">" and float(row[column]) > float(value):
+                elif operator == '>' and float(row[column]) > float(value):
                     filtered.append(row)
 
             self.data = filtered
         except Exception as e:
-            print(f"Ошибка фильтрации {e}")
+            print(f'Ошибка фильтрации {e}')
             sys.exit(1)
 
         return self
 
     def print_results(self):
         if not self.data and not self.aggregation_result:
-            print("Нет данных")
+            print('Нет данных')
             return
 
         if self.aggregation_result:
             print(
                 tabulate(
                     [[self.aggregation_result[0]], [self.aggregation_result[1]]],
-                    tablefmt="grid",
+                    tablefmt='grid',
                 )
             )
             return
         headers = self.data[0].keys()
         rows = [row.values() for row in self.data]
-        print(tabulate(rows, headers=headers, tablefmt="grid"))
+        print(tabulate(rows, headers=headers, tablefmt='grid'))
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Filtration and agregation")
-    parser.add_argument("--file", type=str, help="Path to input file")
-    parser.add_argument("--aggregate", type=str, help="Agregate function")
-    parser.add_argument("--where", type=str, help="Filter function")
+    parser = argparse.ArgumentParser(description='Filtration and agregation')
+    parser.add_argument('--file', type=str, help='Path to input file')
+    parser.add_argument('--aggregate', type=str, help='Agregate function')
+    parser.add_argument('--where', type=str, help='Filter function')
     args = parser.parse_args()
 
     Core = CSVHandler(args.file)
     Core.aggregate(args.aggregate).filtration(args.where).print_results()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
